@@ -38,7 +38,7 @@ before_action :require_same_user, only: [:edit, :update, :destroy]
     end
     def destroy
         @user.destroy
-        session[:user_id] = nil
+        session[:user_id] = nil if @user == current_user
         flash[:notice] = "Account and all associative articles deleted"
         redirect_to users_path
     end
@@ -53,8 +53,8 @@ before_action :require_same_user, only: [:edit, :update, :destroy]
     end
 
     def require_same_user
-        if current_user != @user
-			flash[:alert] = "You can only edit your own profile"
+        if current_user != @user && !current_user.admin?
+			flash[:alert] = "You can only edit/delete your own profile"
 			redirect_to users_path
         end
     end
